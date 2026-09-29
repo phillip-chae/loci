@@ -100,6 +100,13 @@ A link's label is where "how one measure computes another" lives.
 
 Kinds are stored as raw strings, so new kinds can be added without a schema change.
 
+### Soft delete
+
+- Deleting a note or folder sets `deletedAt` instead of removing the record. The folder tree and note lists show only records whose `deletedAt` is nil.
+- Deleting a folder stamps it, and everything beneath it that isn't already deleted, with the same `deletedAt`. Restoring the folder brings back exactly that batch. Anything deleted separately before it stays in Recently Deleted. So everything inside a deleted folder is always deleted too.
+- Recently Deleted lists only records deleted directly: a folder whose parent isn't deleted, or a note whose folder isn't deleted. Anything inside a deleted folder is restored or removed along with that folder.
+- Records are removed permanently after 30 days (checked at launch), or from Recently Deleted by hand. Deletion times are rounded down to whole seconds, so a batch still matches after sync, since CloudKit keeps dates only to the millisecond.
+
 ### CloudKit rules the model must follow
 
 - Every stored property has a default value or is optional.
