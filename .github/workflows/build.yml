@@ -1,0 +1,46 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build for macOS
+        run: |
+          xcodebuild build -quiet \
+            -project Loci/Loci.xcodeproj \
+            -scheme Loci \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Test on iOS Simulator
+        run: |
+          # The newest iPhone simulator on the runner, since device names change between Xcode releases.
+          UDID=$(xcrun simctl list devices available --json | python3 -c '
+          import json, re, sys
+          devices = json.load(sys.stdin)["devices"]
+          def version(runtime):
+              return [int(n) for n in re.findall(r"\d+", runtime.split("iOS-")[-1])]
+          runtimes = sorted((r for r in devices if ".iOS-" in r), key=version, reverse=True)
+          print(next(d["udid"] for r in runtimes for d in devices[r] if d["name"].startswith("iPhone")))
+          ')
+          xcodebuild test -quiet \
+            -project Loci/Loci.xcodeproj \
+            -scheme Loci \
+            -destination "id=$UDID" \
+            CODE_SIGNING_ALLOWED=NO

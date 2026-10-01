@@ -1,3 +1,4 @@
+import Foundation
 import SwiftData
 
 /// An in-memory library with sample content, for SwiftUI previews.
