@@ -26,16 +26,18 @@ loci/
 ├── README.md
 ├── docs/
 │   └── ARCHITECTURE.md
-└── Loci/                  Xcode project folder (created by Xcode)
+└── Loci/                  Xcode project folder
     ├── Loci.xcodeproj
-    └── Loci/              app sources (synchronized folder)
+    ├── Loci/              app sources (synchronized folder)
+    └── LociTests/         unit tests, Swift Testing (synchronized folder)
 ```
 
 ## Getting started
 
 1. Open `Loci/Loci.xcodeproj` in Xcode.
 2. Select the **Loci** scheme and a destination (My Mac, or an iPhone/iPad simulator).
-3. Build and run (⌘R).
+3. To run on your Mac or a device, choose your team under the Loci target's **Signing & Capabilities**. A free Personal Team works. The simulator needs no team.
+4. Build and run (⌘R). Run the tests with ⌘U.
 
 iCloud sync requires a paid Apple Developer Program membership. Without one, the app stores data on the local device only. See "Sync" in the architecture doc.
 
